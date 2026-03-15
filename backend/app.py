@@ -7,21 +7,19 @@ from routes.message_routes import message_bp
 
 app = Flask(__name__)
 
-# ✅ Enable CORS (VERY IMPORTANT)
+# Enable CORS
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# ✅ Register Blueprints
-app.register_blueprint(prediction_bp)
-app.register_blueprint(auth_bp)
-app.register_blueprint(message_bp)
+# Register Blueprints
+app.register_blueprint(prediction_bp, url_prefix="/api/predict")
+app.register_blueprint(auth_bp, url_prefix="/api/auth")
+app.register_blueprint(message_bp, url_prefix="/api/message")
 
-
-# ✅ Test Route
+# Test route
 @app.route("/")
 def home():
     return "Backend Running Successfully"
 
-
-# ✅ Run Server
+# Run server
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

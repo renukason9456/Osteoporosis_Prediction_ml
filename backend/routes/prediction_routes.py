@@ -18,12 +18,14 @@ model = joblib.load(MODEL_PATH)
 # ==============================
 # 1️⃣ Manual Form Prediction
 # ==============================
-@prediction_bp.route("/api/predict/form", methods=["POST"])
+@prediction_bp.route("/form", methods=["POST"])
 def predict_form():
     try:
         data = request.json
 
-        # --- FIX: Convert numeric intake to categories first ---
+        print("Received data:", data)   # Debug print
+
+        # --- Convert numeric intake to categories ---
         calcium = float(data.get("calciumIntake", 0))
         vitaminD = float(data.get("vitaminDIntake", 0))
 
@@ -59,66 +61,65 @@ def predict_form():
             "Prior Fractures": data.get("priorFractures")
         }
 
-        # Preprocess
+        # Preprocess input
         processed = preprocess_input(input_data)
 
-        # Prediction
+        # Model prediction
         pred = int(model.predict(processed)[0])
         prob = float(model.predict_proba(processed)[0][1])
 
         osteoporosis_prediction = "Yes" if pred == 1 else "No"
 
         # BMI calculation
-        height = float(data.get("height",0))/100
-        weight = float(data.get("weight",0))
-        bmi = weight/(height*height) if height > 0 else 0
+        height = float(data.get("height", 0)) / 100
+        weight = float(data.get("weight", 0))
+        bmi = weight / (height * height) if height > 0 else 0
 
         # Risk behavior
-        risk_behavior = 1 if data.get("smoking")=="Yes" and data.get("alcohol")=="Yes" else 0
+        risk_behavior = 1 if data.get("smoking") == "Yes" and data.get("alcohol") == "Yes" else 0
 
-        # Suggestions
+        # Generate suggestions
         suggestions = generate_suggestions(
             pred,
             prob,
             bmi,
-            int(data.get("age",0)),
+            int(data.get("age", 0)),
             risk_behavior
         )
 
         return jsonify({
-            "name": str(data.get("name","N/A")),
-            "age": int(data.get("age",0)),
-            "gender": str(data.get("gender","N/A")),
-            "status": str(suggestions.get("status","N/A")),
-            "tscore": float(suggestions.get("tscore",0)),
-            "fractureRisk": str(suggestions.get("fractureRisk","N/A")),
-            "severity": str(suggestions.get("severity","N/A")),
+            "name": str(data.get("name", "N/A")),
+            "age": int(data.get("age", 0)),
+            "gender": str(data.get("gender", "N/A")),
+            "status": str(suggestions.get("status", "N/A")),
+            "tscore": float(suggestions.get("tscore", 0)),
+            "fractureRisk": str(suggestions.get("fractureRisk", "N/A")),
+            "severity": str(suggestions.get("severity", "N/A")),
             "bmi": float(bmi),
             "Osteoporosis_Prediction": osteoporosis_prediction,
-            "diet": str(suggestions.get("diet","N/A")),
-            "lifestyle": str(suggestions.get("lifestyle","N/A")),
-            "doctor": str(suggestions.get("doctor","N/A")),
-            "badge": str(suggestions.get("badge","N/A"))
+            "diet": str(suggestions.get("diet", "N/A")),
+            "lifestyle": str(suggestions.get("lifestyle", "N/A")),
+            "doctor": str(suggestions.get("doctor", "N/A")),
+            "badge": str(suggestions.get("badge", "N/A"))
         })
 
     except Exception as e:
         print("❌ ERROR:", str(e))
         return jsonify({"error": str(e)}), 500
+
+
+# ==============================
 # 2️⃣ CSV Prediction
 # ==============================
-
-@prediction_bp.route("/api/predict/csv", methods=["POST"])
+@prediction_bp.route("/csv", methods=["POST"])
 def predict_csv():
-
     try:
 
         file = request.files["file"]
 
         df = pd.read_csv(file)
 
-
         features = [
-
             'Age',
             'Gender',
             'Hormonal Changes',
@@ -133,20 +134,15 @@ def predict_csv():
             'Medical Conditions',
             'Medications',
             'Prior Fractures'
-
         ]
 
         df = df[features]
 
-
         processed_list = []
 
         for _, row in df.iterrows():
-
             processed = preprocess_input(row.to_dict())
-
             processed_list.append(processed)
-
 
         processed_df = pd.concat(processed_list)
 
@@ -155,25 +151,18 @@ def predict_csv():
         df["Prediction"] = predictions
 
         df["Result"] = df["Prediction"].apply(
-
-            lambda x: "Osteoporosis Detected" if x==1 else "No Osteoporosis"
-
+            lambda x: "Osteoporosis Detected" if x == 1 else "No Osteoporosis"
         )
 
+        OUTPUT_PATH = os.path.join(BASE_DIR, "prediction_results.csv")
 
-        OUTPUT_PATH = os.path.join(BASE_DIR,"prediction_results.csv")
-
-        df.to_csv(OUTPUT_PATH,index=False)
-
+        df.to_csv(OUTPUT_PATH, index=False)
 
         return send_file(
-
             OUTPUT_PATH,
             as_attachment=True
-
         )
 
-
     except Exception as e:
-
+        print("❌ CSV ERROR:", str(e))
         return jsonify({"error": str(e)})
