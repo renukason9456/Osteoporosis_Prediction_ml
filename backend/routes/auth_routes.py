@@ -1,6 +1,6 @@
-# routes/auth_routes.py
 from flask import Blueprint, request, jsonify
-from utils.auth_utils import load_users, save_users, hash_password
+from utils.auth_utils import hash_password
+from database.db import users_collection   # MongoDB collection
 
 # Create blueprint
 auth_bp = Blueprint("auth", __name__)
@@ -17,22 +17,21 @@ def signup():
     if not name or not email or not password:
         return jsonify({"success": False, "message": "All fields are required"}), 400
 
-    users = load_users()
+    # Check if email already exists in MongoDB
+    existing_user = users_collection.find_one({"email": email})
 
-    # Check if email already exists
-    if any(user["email"] == email for user in users):
+    if existing_user:
         return jsonify({"success": False, "message": "Email already registered"}), 400
 
     # Create new user
     new_user = {
         "name": name,
         "email": email,
-        "password": hash_password(password)  # store hashed password
+        "password": hash_password(password)
     }
 
-    # Save user
-    users.append(new_user)
-    save_users(users)
+    # Insert into MongoDB
+    users_collection.insert_one(new_user)
 
     return jsonify({"success": True, "message": "Signup successful!"}), 201
 
@@ -48,13 +47,16 @@ def login():
     if not email or not password:
         return jsonify({"success": False, "message": "Email and password are required"}), 400
 
-    users = load_users()
     hashed = hash_password(password)
 
-    # Authenticate
-    user = next((u for u in users if u["email"] == email and u["password"] == hashed), None)
+    # Find user in MongoDB
+    user = users_collection.find_one({"email": email, "password": hashed})
 
     if user:
-        return jsonify({"success": True, "message": "Login successful!", "name": user["name"]}), 200
+        return jsonify({
+            "success": True,
+            "message": "Login successful!",
+            "name": user["name"]
+        }), 200
     else:
         return jsonify({"success": False, "message": "Invalid email or password"}), 401

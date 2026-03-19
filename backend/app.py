@@ -13,7 +13,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # Register Blueprints
 app.register_blueprint(prediction_bp, url_prefix="/api/predict")
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
-app.register_blueprint(message_bp, url_prefix="/api/message")
+app.register_blueprint(message_bp, url_prefix="/api")
 
 # Test route
 @app.route("/")
