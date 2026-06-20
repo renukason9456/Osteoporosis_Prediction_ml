@@ -1,11 +1,16 @@
 import React from "react";
 
+import renukaImg from "./renuka.jpg";
+import shitalImg from "./shital.jpeg";
+import supriyaImg from "./supriya.jpeg";
+import MansiImg from "./Mansi.jpg";
+
 const AboutUs = () => {
   const team = [
-    { name: "Shital Bhade", tech: "Backend Developer", img: "https://randomuser.me/api/portraits/women/45.jpg" },
-    { name: "Supriya Kore", tech: "Frontend Developer", img: "https://randomuser.me/api/portraits/women/50.jpg" },
-    { name: "Mansi Shinde", tech: "Frontend Developer, UI/UX", img: "https://randomuser.me/api/portraits/women/65.jpg" },
-    { name: "Renuka Sonawane", tech: "Backend Developer", img: "https://randomuser.me/api/portraits/women/68.jpg" },
+    { name: "Shital Bhade", tech: "Backend Developer", img: shitalImg },
+    { name: "Supriya Kore", tech: "Frontend Developer", img: supriyaImg },
+    { name: "Mansi Shinde", tech: "Frontend Developer", img: MansiImg },
+    { name: "Renuka Sonawane", tech: "Backend Developer", img: renukaImg },
   ];
 
   return (

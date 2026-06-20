@@ -49,13 +49,13 @@ const Home = () => {
 
       {/* Subtitle */}
       <h2 className="text-2xl md:text-3xl font-medium text-gray-700 mb-8">
-        AI-Powered Osteoporosis Detection System
+        Osteoporosis Detection System
       </h2>
 
       {/* Description */}
       <p className="max-w-2xl text-gray-600 text-lg mb-10">
         BoneGuard helps healthcare professionals identify bone health issues through intelligent scanning
-        and predictive algorithms. Upload your data and let the AI handle the diagnosis — non-invasive,
+        and predictive algorithms. Upload your data and let the  handle the diagnosis — non-invasive,
         accurate, and fast.
       </p>
 
