@@ -84,9 +84,12 @@ const Login = ({ setUser }) => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-4 focus:ring-indigo-400 transition duration-200 text-base"
               />
               <div className="text-right text-sm mt-1">
-                <a href="#" className="text-indigo-600 hover:underline">
-                  Forgot password?
-                </a>
+                <p className="text-indigo-600 hover:underline">
+                  <Link to="/forgot-password">
+                    Forgot Password?
+                  </Link>
+                </p>
+
               </div>
             </div>
 

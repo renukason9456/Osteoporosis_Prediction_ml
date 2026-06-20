@@ -60,3 +60,64 @@ def login():
         }), 200
     else:
         return jsonify({"success": False, "message": "Invalid email or password"}), 401
+
+# ------------------ FORGOT PASSWORD ------------------
+@auth_bp.route("/forgot-password", methods=["POST"])
+def forgot_password():
+    data = request.json
+
+    email = data.get("email")
+    new_password = data.get("newPassword")
+
+    print("EMAIL:", email)
+    print("NEW PASSWORD:", new_password)
+
+    user = users_collection.find_one({"email": email})
+    print("USER FOUND:", user)
+
+    result = users_collection.update_one(
+        {"email": email},
+        {"$set": {"password": hash_password(new_password)}}
+    )
+
+    print("MATCHED:", result.matched_count)
+    print("MODIFIED:", result.modified_count)
+
+    return jsonify({
+        "success": True,
+        "message": "Password updated successfully"
+    }), 200
+    data = request.json
+
+    email = data.get("email")
+    new_password = data.get("newPassword")
+
+    if not email or not new_password:
+        return jsonify({
+            "success": False,
+            "message": "Email and new password are required"
+        }), 400
+
+    # Check user exists
+    user = users_collection.find_one({"email": email})
+
+    if not user:
+        return jsonify({
+            "success": False,
+            "message": "Email not found"
+        }), 404
+
+    # Update password
+    users_collection.update_one(
+        {"email": email},
+        {
+            "$set": {
+                "password": hash_password(new_password)
+            }
+        }
+    )
+
+    return jsonify({
+        "success": True,
+        "message": "Password updated successfully"
+    }), 200

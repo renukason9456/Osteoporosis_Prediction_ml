@@ -1,9 +1,10 @@
 import React from "react";
 
-import renukaImg from "./renuka.jpg";
-import shitalImg from "./shital.jpeg";
-import supriyaImg from "./supriya.jpeg";
-import MansiImg from "./Mansi.jpg";
+import renukaImg from "../Assets/renuka.jpg";
+import shitalImg from "../Assets/shital.jpeg";
+import supriyaImg from "../Assets/supriya.jpeg";
+import MansiImg from "../Assets/Mansi.jpg";
+
 
 const AboutUs = () => {
   const team = [

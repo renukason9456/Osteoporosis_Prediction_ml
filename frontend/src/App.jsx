@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Predict from "./pages/Predict";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function AppLayout() {
   const [user, setUser] = useState(null);
@@ -53,6 +54,10 @@ function AppLayout() {
             element={
               !user ? <Signup setUser={setUser} /> : <Navigate to="/predict" />
             }
+          />
+          <Route
+            path="/forgot-password"
+            element={<ForgotPassword />}
           />
         </Routes>
       </div>
